@@ -9,7 +9,7 @@ checkStringLength('abc', 3);
 //Функция для проверки, является ли строка палиндромом
 
 function checkPalindrome (string) {
-  const normalizeString = ((string).replaceAll(' ','')).toLowerCase();
+  const normalizeString = string.replaceAll(' ','').toLowerCase();
   let newString = '';
   const maxIndex = normalizeString.length - 1;
   for (let i = maxIndex; i >= 0; i--) {
