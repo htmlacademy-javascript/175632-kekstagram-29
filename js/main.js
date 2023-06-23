@@ -54,22 +54,25 @@ const generateUrlId = createIdGenerator();
 
 const getElement = (array) => array[getRandomInteger(0, array.length - 1)];
 
-const createComments = (id) => (
+const createComment = (generateCommentId) => (
   {
-    id: id++,
+    id: generateCommentId(),
     avatar: `img/avatar-${ getRandomInteger(AVATAR_ID_MIN, AVATAR_ID_MAX) }.svg`,
     message: getElement(MESSAGES),
     name: getElement(NAMES)
   });
 
-const getComment = () => Array.from({ length: getRandomInteger(COMMENTS_NUMBER_MIN, COMMENTS_NUMBER_MAX)}, (_, index) => createComments(index + 1));
+const getComments = () => {
+  const generateCommentId = createIdGenerator();
+  return Array.from({ length: getRandomInteger(COMMENTS_NUMBER_MIN, COMMENTS_NUMBER_MAX)},() => createComment(generateCommentId));
+};
 
 const createDescription = () => ({
   id: generatePhotoId(),
   url: `photos/${ generateUrlId() }.jpg`,
   description: getElement(PHOTO_DESCRIPTION),
   likes: getRandomInteger(LIKES_NUMBER_MIN, LIKES_NUMBER_MAX),
-  comments: getComment()
+  comments: getComments()
 });
 
 const randomDescription = Array.from({ length: DESCRIPTIONS_COUNT}, createDescription);
