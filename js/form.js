@@ -10,17 +10,19 @@ const imgUploadComments = imgUploadForm.querySelector('.text__description');
 const scaleControlSmaller = imgUploadForm.querySelector('.scale__control--smaller');
 const scaleControlBigger = imgUploadForm.querySelector('.scale__control--bigger');
 const scaleControlValue = imgUploadForm.querySelector('.scale__control--value');
-const imgUploadPreview = imgUploadForm.querySelector('.img-upload__preview');
+const imgUploadContainer = imgUploadForm.querySelector('.img-upload__preview');
+const imgUploadPreview = imgUploadContainer.querySelector('img');
+const sliderContainer = imgUploadForm.querySelector('.img-upload__effect-level');
 const sliderElement = imgUploadForm.querySelector('.effect-level__slider');
 const effectLevel = imgUploadForm.querySelector('.effect-level__value');
 const effectsRadio = imgUploadForm.querySelectorAll('.effects__radio');
 
 const EFFECTS_CSS = [
-  {name: 'grayscale', min: 0, max: 1, step: 0.1},
-  {name: 'sepia', min: 0, max: 1, step: 0.1},
-  {name: 'invert', min: 0, max: 100, step: 1},
-  {name: 'blur', min: 0, max: 3, step: 0.1},
-  {name: 'brightness', min: 1, max: 3, step: 0.1}
+  {name: 'grayscale', min: 0, max: 1, step: 0.1, unit: ''},
+  {name: 'sepia', min: 0, max: 1, step: 0.1, unit: ''},
+  {name: 'invert', min: 0, max: 100, step: 1, unit: '%'},
+  {name: 'blur', min: 0, max: 3, step: 0.1, unit: 'px'},
+  {name: 'brightness', min: 1, max: 3, step: 0.1, unit: ''}
 ];
 
 const EFFECTS_NAMES = [
@@ -31,10 +33,21 @@ const EFFECTS_NAMES = [
   'heat'
 ];
 
+sliderContainer.classList.add('hidden');
+sliderElement.classList.add('hidden');
+
 effectsRadio.forEach((effectRadio) => {
   effectRadio.addEventListener('click', () => {
     const effect = effectRadio.value;
-    applyEffect(effect);
+    if (effect === 'none') {
+      imgUploadPreview.style.filter = 'none';
+      sliderElement.classList.add('hidden');
+      sliderContainer.classList.add('hidden');
+    } else {
+      sliderElement.classList.remove('hidden');
+      sliderContainer.classList.remove('hidden');
+      applyEffect(effect);
+    }
   });
 }
 );
@@ -64,7 +77,7 @@ function applyEffect (effect) {
   });
   sliderElement.noUiSlider.on('update', () => {
     effectLevel.value = sliderElement.noUiSlider.get();
-    imgUploadPreview.style.filter = `${effectCss }(${ effectLevel.value })`;
+    imgUploadPreview.style.filter = `${effectCss }(${ effectLevel.value }${EFFECTS_CSS[index].unit})`;
   });
 }
 
@@ -90,7 +103,7 @@ scaleControlSmaller.addEventListener('click', () => {
   }
 });
 
-const getArray = (value) => value.split(' ');
+const getArray = (value) => value.trim().split(' ');
 
 hashtags.addEventListener('keydown', (evt) => {
   evt.stopPropagation();
@@ -115,15 +128,6 @@ const openFormImgUpload = () => {
 
 imgUpload.addEventListener('change', openFormImgUpload);
 
-function closeFormImgUpload () {
-  imgUpload.value = '';
-  hashtags.value = '';
-  imgUploadComments.value = '';
-  imgUploadOverlay.classList.add('hidden');
-  body.classList.remove('modal-open');
-  document.removeEventListener('keydown', onDocumentKeydown);
-}
-
 imgUploadCancel.addEventListener('click', closeFormImgUpload);
 
 const pristine = new Pristine(imgUploadForm, {
@@ -136,7 +140,7 @@ const regHashtag = /^#[a-zа-яё0-9]{1,19}$/i;
 function validateHashtag (value) {
   let n = true;
   const hashtagsArray = getArray(value);
-  if (hashtagsArray === ['']) {
+  if (hashtagsArray[0] === '') {
     n = true;
   } else {
     hashtagsArray.forEach((element) => {
@@ -170,19 +174,28 @@ function validateHashtagLength (value) {
   return value.length <= 20;
 }
 
-function validateComment (value) {
-  return value.length <= 140;
-}
-
 pristine.addValidator(hashtags, validateHashtag, 'Хэш-тег невалидный');
 pristine.addValidator(hashtags, validateHashtagsCopy, 'Хэш-теги повторяются');
 pristine.addValidator(hashtags, validateHashtagscount, 'Максимальное количество хэш-тегов - 5');
 pristine.addValidator(hashtags, validateHashtagLength, 'Максимальная длина хэш-тега 20 символов');
 
-pristine.addValidator(imgUploadComments, validateComment, 'Максимальная длина комментария 140 символов');
 
 imgUploadForm.addEventListener('submit', (evt) => {
   if (!pristine.validate()) {
     evt.preventDefault();
   }
 });
+
+function closeFormImgUpload () {
+  imgUpload.value = '';
+  hashtags.value = '';
+  imgUploadComments.value = '';
+  imgUploadOverlay.classList.add('hidden');
+  body.classList.remove('modal-open');
+  document.removeEventListener('keydown', onDocumentKeydown);
+  pristine.reset();
+  imgUploadPreview.style.transform = 'none';
+  sliderElement.classList.add('hidden');
+  sliderContainer.classList.add('hidden');
+  imgUploadPreview.style.filter = 'none';
+}
