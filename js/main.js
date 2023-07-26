@@ -4,13 +4,11 @@ import {setUserFormSubmit, closeFormImgUpload} from './form.js';
 import {showAlert} from './util.js';
 import {getData} from './api.js';
 
-getData()
-  .then((photos) => {
+getData(
+  (photos) => {
     renderPictures(photos);
-  })
-  .catch((err) => {
-    showAlert(err);
-  });
+  },
+  (err) => showAlert(err));
 
 setUserFormSubmit(closeFormImgUpload);
 
