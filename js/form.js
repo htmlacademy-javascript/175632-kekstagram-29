@@ -1,4 +1,5 @@
 import {isEscapeKey} from './util.js';
+import {sendData} from './api.js';
 
 const imgUploadForm = document.querySelector('.img-upload__form');
 const submitButton = imgUploadForm.querySelector('.img-upload__submit');
@@ -112,13 +113,6 @@ scaleControlSmaller.addEventListener('click', () => {
 
 const getArray = (value) => value.trim().split(' ');
 
-hashtags.addEventListener('keydown', (evt) => {
-  evt.stopPropagation();
-});
-
-imgUploadComments.addEventListener('keydown', (evt) => {
-  evt.stopPropagation();
-});
 
 const onFormKeydown = (evt) => {
   if (isEscapeKey(evt)) {
@@ -129,13 +123,22 @@ const onFormKeydown = (evt) => {
 
 const openFormImgUpload = () => {
   imgUploadOverlay.classList.remove('hidden');
+  imgUploadCancel.addEventListener('click', closeFormImgUpload);
   body.classList.add('modal-open');
   document.addEventListener('keydown', onFormKeydown);
+  hashtags.addEventListener('keydown', (evt) => {
+    if (isEscapeKey(evt)) {
+      evt.stopPropagation();
+    }
+  });
+  imgUploadComments.addEventListener('keydown', (evt) => {
+    if (isEscapeKey(evt)) {
+      evt.stopPropagation();
+    }
+  });
 };
 
 imgUpload.addEventListener('change', openFormImgUpload);
-
-imgUploadCancel.addEventListener('click', closeFormImgUpload);
 
 const pristine = new Pristine(imgUploadForm, {
   classTo: 'img-upload__field-wrapper',
@@ -248,6 +251,7 @@ function closeErrorWindow () {
   document.removeEventListener('keydown', onErrorWindowKeydown);
   errorContainer.removeEventListener('click', closeWindowClickOut);
   errorButton.removeEventListener('click', closeErrorWindow);
+  document.addEventListener('keydown', onFormKeydown);
 }
 
 const blockSubmitButton = () => {
@@ -258,31 +262,14 @@ const unblockSubmitButton = () => {
   submitButton.disabled = false;
 };
 
-const setUserFormSubmit = (onSuccess) => {
+const setUserFormSubmit = () => {
   imgUploadForm.addEventListener('submit', (evt) => {
     evt.preventDefault();
     const isValid = pristine.validate();
     if (isValid) {
       blockSubmitButton();
       const formData = new FormData(evt.target);
-      fetch(
-        'https://29.javascript.pages.academy/kekstagram',
-        {
-          method: 'POST',
-          body: formData,
-        },
-      ).then((response) => {
-        if (response.ok) {
-          onSuccess();
-          showSuccessWindow();
-        } else {
-          showErrorWindow();
-        }
-      })
-        .catch(() => {
-          showErrorWindow();
-        })
-        .finally(unblockSubmitButton);
+      sendData(formData);
     } else {
       evt.preventDefault();
     }
@@ -303,6 +290,7 @@ function closeFormImgUpload () {
   sliderContainer.classList.add('hidden');
   imgUploadPreview.style.filter = 'none';
   effectNone.checked = true;
+  imgUploadCancel.removeEventListener('click', closeFormImgUpload);
 }
 
-export {setUserFormSubmit, closeFormImgUpload};
+export {closeFormImgUpload, showSuccessWindow, showErrorWindow, unblockSubmitButton, setUserFormSubmit};
