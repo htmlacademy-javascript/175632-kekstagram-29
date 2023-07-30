@@ -3,8 +3,8 @@ import {openBigPicture} from './picturesFull.js';
 const picturesContainerElement = document.querySelector('.pictures');
 const pictureTemplateElement = document.querySelector('#picture').content.querySelector('.picture');
 
-
 const renderPictures = (photos) => {
+  picturesContainerElement.querySelectorAll('.picture').forEach((element) => element.remove());
 
   const otherPicturesFragment = document.createDocumentFragment();
 
@@ -23,4 +23,6 @@ const renderPictures = (photos) => {
   picturesContainerElement.appendChild(otherPicturesFragment);
 };
 
+
 export {renderPictures};
+

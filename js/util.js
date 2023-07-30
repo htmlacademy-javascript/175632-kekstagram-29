@@ -1,4 +1,17 @@
+/* eslint-disable no-useless-return */
 const ALERT_SHOW_TIME = 10000;
+const filter = {
+  default: 'filter-default',
+  random: 'filter-random',
+  discussed: 'filter-discussed'
+};
+
+const PHOTOS_COUNT = 10;
+
+const imgFiltersElement = document.querySelector('.img-filters');
+let photosCopy = [];
+let currentFilter = filter.default;
+
 
 const showAlert = (error) => {
   const alertContainer = document.createElement('div');
@@ -41,4 +54,52 @@ const getElement = (array) => array[getRandomInteger(0, array.length - 1)];
 
 const isEscapeKey = (evt) => evt.key === 'Escape';
 
-export {createIdGenerator, getRandomInteger, getElement, isEscapeKey, showAlert};
+const sortRandom = () => Math.random() - 0.5;
+const sortCommentsLength = (photoA, photoB) => photoB.comments.length - photoA.comments.length;
+
+const getSortedPhotos = () => {
+  switch(currentFilter) {
+    case filter.random:
+      return [...photosCopy].sort(sortRandom).slice(0,PHOTOS_COUNT);
+    case filter.discussed:
+      return [...photosCopy].sort(sortCommentsLength);
+    default:
+      return [...photosCopy];
+  }
+};
+
+const setOnFilterClick = (cb) => {
+  imgFiltersElement.addEventListener('click', (evt) => {
+    if (!evt.target.classList.contains('img-filters__button')) {
+      return;
+    }
+
+    const filterButton = evt.target;
+    if (filterButton.id === currentFilter) {
+      return;
+    }
+
+    imgFiltersElement
+      .querySelector('.img-filters__button--active')
+      .classList.remove('img-filters__button--active');
+    filterButton.classList.add('img-filters__button--active');
+    currentFilter = filterButton.id;
+    cb(getSortedPhotos());
+  });
+};
+
+const initFilter = (loadedPhotos, cb) => {
+  imgFiltersElement.classList.remove('img-filters--inactive');
+  photosCopy = [...loadedPhotos];
+  setOnFilterClick(cb);
+};
+
+function debounce (callback, timeoutDelay = 500) {
+  let timeoutId;
+  return (...rest) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+  };
+}
+
+export {createIdGenerator, getRandomInteger, getElement, isEscapeKey, showAlert, initFilter, getSortedPhotos, debounce};
