@@ -1,28 +1,28 @@
 import {isEscapeKey} from './util.js';
 import {sendData} from './api.js';
 
-const imgUploadForm = document.querySelector('.img-upload__form');
-const submitButton = imgUploadForm.querySelector('.img-upload__submit');
-const imgUpload = document.querySelector('.img-upload__input');
-const imgUploadOverlay = document.querySelector('.img-upload__overlay');
+const imgUploadFormElement = document.querySelector('.img-upload__form');
+const submitButtonElement = imgUploadFormElement.querySelector('.img-upload__submit');
+const imgUploadElement = document.querySelector('.img-upload__input');
+const imgUploadOverlayElement = document.querySelector('.img-upload__overlay');
 const body = document.body;
-const imgUploadCancel = document.querySelector('.img-upload__cancel');
-const hashtags = imgUploadForm.querySelector('.text__hashtags');
-const imgUploadComments = imgUploadForm.querySelector('.text__description');
-const scaleControlSmaller = imgUploadForm.querySelector('.scale__control--smaller');
-const scaleControlBigger = imgUploadForm.querySelector('.scale__control--bigger');
-const scaleControlValue = imgUploadForm.querySelector('.scale__control--value');
-const imgUploadContainer = imgUploadForm.querySelector('.img-upload__preview');
-const imgUploadPreview = imgUploadContainer.querySelector('img');
-const sliderContainer = imgUploadForm.querySelector('.img-upload__effect-level');
-const sliderElement = imgUploadForm.querySelector('.effect-level__slider');
-const effectLevel = imgUploadForm.querySelector('.effect-level__value');
-const effectsRadio = imgUploadForm.querySelectorAll('.effects__radio');
-const effectNone = imgUploadForm.querySelector('#effect-none');
+const imgUploadCancelElement = document.querySelector('.img-upload__cancel');
+const hashtagElement = imgUploadFormElement.querySelector('.text__hashtags');
+const imgUploadCommentsElement = imgUploadFormElement.querySelector('.text__description');
+const scaleControlSmallerElement = imgUploadFormElement.querySelector('.scale__control--smaller');
+const scaleControlBiggerElement = imgUploadFormElement.querySelector('.scale__control--bigger');
+const scaleControlValueElement = imgUploadFormElement.querySelector('.scale__control--value');
+const imgUploadContainerElement = imgUploadFormElement.querySelector('.img-upload__preview');
+const imgUploadPreviewElement = imgUploadContainerElement.querySelector('img');
+const sliderContainerElement = imgUploadFormElement.querySelector('.img-upload__effect-level');
+const sliderElement = imgUploadFormElement.querySelector('.effect-level__slider');
+const effectLevelElement = imgUploadFormElement.querySelector('.effect-level__value');
+const effectRadioButtons = imgUploadFormElement.querySelectorAll('.effects__radio');
+const effectNoneElement = imgUploadFormElement.querySelector('#effect-none');
 const successTemplateElement = document.querySelector('#success').content.querySelector('.success');
 const errorTemplateElement = document.querySelector('#error').content.querySelector('.error');
-let successContainer;
-let errorContainer;
+let successContainerElement;
+let errorContainerElement;
 
 
 const EFFECTS_CSS = [
@@ -41,19 +41,19 @@ const EFFECTS_NAMES = [
   'heat'
 ];
 
-sliderContainer.classList.add('hidden');
+sliderContainerElement.classList.add('hidden');
 sliderElement.classList.add('hidden');
 
-effectsRadio.forEach((effectRadio) => {
+effectRadioButtons.forEach((effectRadio) => {
   effectRadio.addEventListener('click', () => {
     const effect = effectRadio.value;
     if (effect === 'none') {
-      imgUploadPreview.style.filter = 'none';
+      imgUploadPreviewElement.style.filter = 'none';
       sliderElement.classList.add('hidden');
-      sliderContainer.classList.add('hidden');
+      sliderContainerElement.classList.add('hidden');
     } else {
       sliderElement.classList.remove('hidden');
-      sliderContainer.classList.remove('hidden');
+      sliderContainerElement.classList.remove('hidden');
       applyEffect(effect);
     }
   });
@@ -65,7 +65,7 @@ noUiSlider.create(sliderElement, {
     min: 0,
     max: 1,
   },
-  start: effectLevel.value,
+  start: effectLevelElement.value,
   step: 0.1,
   connect: 'lower',
 });
@@ -73,40 +73,40 @@ noUiSlider.create(sliderElement, {
 function applyEffect (effect) {
   const index = EFFECTS_NAMES.indexOf(effect);
   const effectCss = EFFECTS_CSS[index].name;
-  effectLevel.value = EFFECTS_CSS[index].max;
+  effectLevelElement.value = EFFECTS_CSS[index].max;
   sliderElement.noUiSlider.updateOptions ({
     range: {
       min: EFFECTS_CSS[index].min,
       max: EFFECTS_CSS[index].max,
     },
-    start: effectLevel.value,
+    start: effectLevelElement.value,
     step: EFFECTS_CSS[index].step,
     connect: 'lower',
   });
   sliderElement.noUiSlider.on('update', () => {
-    effectLevel.value = sliderElement.noUiSlider.get();
-    imgUploadPreview.style.filter = `${effectCss }(${ effectLevel.value }${EFFECTS_CSS[index].unit})`;
+    effectLevelElement.value = sliderElement.noUiSlider.get();
+    imgUploadPreviewElement.style.filter = `${effectCss }(${ effectLevelElement.value }${EFFECTS_CSS[index].unit})`;
   });
 }
 
-scaleControlBigger.addEventListener('click', () => {
-  let scaleControlNumber = parseInt(scaleControlValue.value, 10);
+scaleControlBiggerElement.addEventListener('click', () => {
+  let scaleControlNumber = parseInt(scaleControlValueElement.value, 10);
   if (scaleControlNumber < 100) {
     if (scaleControlNumber >= 0) {
       scaleControlNumber += 25;
-      scaleControlValue.value = `${scaleControlNumber}%`;
-      imgUploadPreview.style.transform = `scale(${ scaleControlNumber / 100 })`;
+      scaleControlValueElement.value = `${scaleControlNumber}%`;
+      imgUploadPreviewElement.style.transform = `scale(${ scaleControlNumber / 100 })`;
     }
   }
 });
 
-scaleControlSmaller.addEventListener('click', () => {
-  let scaleControlNumber = parseInt(scaleControlValue.value, 10);
+scaleControlSmallerElement.addEventListener('click', () => {
+  let scaleControlNumber = parseInt(scaleControlValueElement.value, 10);
   if (scaleControlNumber > 0) {
     if (scaleControlNumber <= 100) {
       scaleControlNumber -= 25;
-      scaleControlValue.value = `${scaleControlNumber}%`;
-      imgUploadPreview.style.transform = `scale(${ scaleControlNumber / 100 })`;
+      scaleControlValueElement.value = `${scaleControlNumber}%`;
+      imgUploadPreviewElement.style.transform = `scale(${ scaleControlNumber / 100 })`;
     }
   }
 });
@@ -122,32 +122,32 @@ const onFormKeydown = (evt) => {
 };
 
 const openFormImgUpload = () => {
-  imgUploadOverlay.classList.remove('hidden');
-  imgUploadCancel.addEventListener('click', closeFormImgUpload);
+  imgUploadOverlayElement.classList.remove('hidden');
+  imgUploadCancelElement.addEventListener('click', closeFormImgUpload);
   body.classList.add('modal-open');
   document.addEventListener('keydown', onFormKeydown);
-  hashtags.addEventListener('keydown', (evt) => {
+  hashtagElement.addEventListener('keydown', (evt) => {
     if (isEscapeKey(evt)) {
       evt.stopPropagation();
     }
   });
-  imgUploadComments.addEventListener('keydown', (evt) => {
+  imgUploadCommentsElement.addEventListener('keydown', (evt) => {
     if (isEscapeKey(evt)) {
       evt.stopPropagation();
     }
   });
 };
 
-imgUpload.addEventListener('change', openFormImgUpload);
+imgUploadElement.addEventListener('change', openFormImgUpload);
 
-const pristine = new Pristine(imgUploadForm, {
+const pristine = new Pristine(imgUploadFormElement, {
   classTo: 'img-upload__field-wrapper',
   errorTextParent: 'img-upload__field-wrapper',
 }, false);
 
 const regHashtag = /^#[a-zа-яё0-9]{1,19}$/i;
 
-function validateHashtag (value) {
+const validateHashtag = (value) => {
   let n = true;
   const hashtagsArray = getArray(value);
   if (hashtagsArray[0] === '') {
@@ -160,9 +160,9 @@ function validateHashtag (value) {
     });
   }
   return n;
-}
+};
 
-function validateHashtagsCopy (value) {
+const validateHashtagsCopy = (value) => {
   const hashtagsArray = getArray(value);
   let n = true;
   for (let i = 0; i < hashtagsArray.length; i++) {
@@ -173,31 +173,29 @@ function validateHashtagsCopy (value) {
     }
   }
   return n;
-}
+};
 
-function validateHashtagscount (value) {
+const validateHashtagscount = (value) => {
   const hashtagsArray = getArray(value);
   return hashtagsArray.length <= 5;
-}
+};
 
-function validateHashtagLength (value) {
-  return value.length <= 20;
-}
+const validateHashtagLength = (value) => value.length <= 20;
 
-pristine.addValidator(hashtags, validateHashtag, 'Хэш-тег невалидный');
-pristine.addValidator(hashtags, validateHashtagsCopy, 'Хэш-теги повторяются');
-pristine.addValidator(hashtags, validateHashtagscount, 'Максимальное количество хэш-тегов - 5');
-pristine.addValidator(hashtags, validateHashtagLength, 'Максимальная длина хэш-тега 20 символов');
+pristine.addValidator(hashtagElement, validateHashtag, 'Хэш-тег невалидный');
+pristine.addValidator(hashtagElement, validateHashtagsCopy, 'Хэш-теги повторяются');
+pristine.addValidator(hashtagElement, validateHashtagscount, 'Максимальное количество хэш-тегов - 5');
+pristine.addValidator(hashtagElement, validateHashtagLength, 'Максимальная длина хэш-тега 20 символов');
 
-const successMessage = successTemplateElement.cloneNode(true);
-const successButton = successMessage.querySelector('.success__button');
-successMessage.classList.add('hidden');
-document.body.append(successMessage);
+const successMessageElement = successTemplateElement.cloneNode(true);
+const successButtonElement = successMessageElement.querySelector('.success__button');
+successMessageElement.classList.add('hidden');
+document.body.append(successMessageElement);
 
-const errorMessage = errorTemplateElement.cloneNode(true);
-const errorButton = errorMessage.querySelector('.error__button');
-errorMessage.classList.add('hidden');
-document.body.append(errorMessage);
+const errorMessageElement = errorTemplateElement.cloneNode(true);
+const errorButtonElement = errorMessageElement.querySelector('.error__button');
+errorMessageElement.classList.add('hidden');
+document.body.append(errorMessageElement);
 
 const onSuccessWindowKeydown = (evt) => {
   if (isEscapeKey(evt)) {
@@ -213,57 +211,57 @@ const onErrorWindowKeydown = (evt) => {
   }
 };
 
-function closeWindowClickOut (evt) {
-  if (evt.target === successContainer) {
+const onWindowClickOutClose = (evt) => {
+  if (evt.target === successContainerElement) {
     closeSuccessWindow ();
   }
-  if (evt.target === errorContainer) {
+  if (evt.target === errorContainerElement) {
     closeErrorWindow ();
   }
-}
+};
 
-function showSuccessWindow () {
-  successMessage.classList.remove('hidden');
+const showSuccessWindow = () => {
+  successMessageElement.classList.remove('hidden');
   document.addEventListener('keydown', onSuccessWindowKeydown);
-  successContainer = document.querySelector('.success');
-  successContainer.addEventListener('click', closeWindowClickOut);
-  successButton.addEventListener('click', closeSuccessWindow);
-}
+  successContainerElement = document.querySelector('.success');
+  successContainerElement.addEventListener('click', onWindowClickOutClose);
+  successButtonElement.addEventListener('click', closeSuccessWindow);
+};
 
-function showErrorWindow () {
-  errorMessage.classList.remove('hidden');
+const showErrorWindow = () => {
+  errorMessageElement.classList.remove('hidden');
   document.addEventListener('keydown', onErrorWindowKeydown);
-  errorButton.addEventListener('click', closeErrorWindow);
-  errorContainer = document.querySelector('.error');
-  errorContainer.addEventListener('click', closeWindowClickOut);
+  errorButtonElement.addEventListener('click', closeErrorWindow);
+  errorContainerElement = document.querySelector('.error');
+  errorContainerElement.addEventListener('click', onWindowClickOutClose);
   document.removeEventListener('keydown', onFormKeydown);
-}
+};
 
 function closeSuccessWindow () {
-  successMessage.classList.add('hidden');
+  successMessageElement.classList.add('hidden');
   document.removeEventListener('keydown', onSuccessWindowKeydown);
-  successContainer.removeEventListener('click', closeWindowClickOut);
-  successButton.removeEventListener('click', closeSuccessWindow);
+  successContainerElement.removeEventListener('click', onWindowClickOutClose);
+  successButtonElement.removeEventListener('click', closeSuccessWindow);
 }
 
 function closeErrorWindow () {
-  errorMessage.classList.add('hidden');
+  errorMessageElement.classList.add('hidden');
   document.removeEventListener('keydown', onErrorWindowKeydown);
-  errorContainer.removeEventListener('click', closeWindowClickOut);
-  errorButton.removeEventListener('click', closeErrorWindow);
+  errorContainerElement.removeEventListener('click', onWindowClickOutClose);
+  errorButtonElement.removeEventListener('click', closeErrorWindow);
   document.addEventListener('keydown', onFormKeydown);
 }
 
 const blockSubmitButton = () => {
-  submitButton.disabled = true;
+  submitButtonElement.disabled = true;
 };
 
 const unblockSubmitButton = () => {
-  submitButton.disabled = false;
+  submitButtonElement.disabled = false;
 };
 
 const setUserFormSubmit = () => {
-  imgUploadForm.addEventListener('submit', (evt) => {
+  imgUploadFormElement.addEventListener('submit', (evt) => {
     evt.preventDefault();
     const isValid = pristine.validate();
     if (isValid) {
@@ -277,20 +275,20 @@ const setUserFormSubmit = () => {
 };
 
 function closeFormImgUpload () {
-  imgUpload.value = '';
-  hashtags.value = '';
-  imgUploadComments.value = '';
-  imgUploadOverlay.classList.add('hidden');
+  imgUploadElement.value = '';
+  hashtagElement.value = '';
+  imgUploadCommentsElement.value = '';
+  imgUploadOverlayElement.classList.add('hidden');
   body.classList.remove('modal-open');
   document.removeEventListener('keydown', onFormKeydown);
   pristine.reset();
-  scaleControlValue.value = '100%';
-  imgUploadPreview.style.transform = 'none';
+  scaleControlValueElement.value = '100%';
+  imgUploadPreviewElement.style.transform = 'none';
   sliderElement.classList.add('hidden');
-  sliderContainer.classList.add('hidden');
-  imgUploadPreview.style.filter = 'none';
-  effectNone.checked = true;
-  imgUploadCancel.removeEventListener('click', closeFormImgUpload);
+  sliderContainerElement.classList.add('hidden');
+  imgUploadPreviewElement.style.filter = 'none';
+  effectNoneElement.checked = true;
+  imgUploadCancelElement.removeEventListener('click', closeFormImgUpload);
 }
 
 export {closeFormImgUpload, showSuccessWindow, showErrorWindow, unblockSubmitButton, setUserFormSubmit};

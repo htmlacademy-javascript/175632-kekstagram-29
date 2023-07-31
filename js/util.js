@@ -35,23 +35,6 @@ const showAlert = (error) => {
   }, ALERT_SHOW_TIME);
 };
 
-const createIdGenerator = () => {
-  let lastGeneratedId = 0;
-  return function () {
-    lastGeneratedId += 1;
-    return lastGeneratedId;
-  };
-};
-
-const getRandomInteger = (a, b) => {
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
-  const result = Math.random() * (upper - lower + 1) + lower;
-  return Math.floor(result);
-};
-
-const getElement = (array) => array[getRandomInteger(0, array.length - 1)];
-
 const isEscapeKey = (evt) => evt.key === 'Escape';
 
 const sortRandom = () => Math.random() - 0.5;
@@ -102,4 +85,4 @@ function debounce (callback, timeoutDelay = 500) {
   };
 }
 
-export {createIdGenerator, getRandomInteger, getElement, isEscapeKey, showAlert, initFilter, getSortedPhotos, debounce};
+export {isEscapeKey, showAlert, initFilter, getSortedPhotos, debounce};
