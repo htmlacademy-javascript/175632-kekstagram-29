@@ -1,20 +1,20 @@
 const FILE_TYPES = ['jpg', 'jpeg', 'png'];
 
-const fileChooser = document.querySelector('.img-upload__input');
-const imgUploadPreview = document.querySelector('.img-upload__preview img');
-const EffectsPreview = document.querySelectorAll('.effects__preview');
+const fileChooserElement = document.querySelector('.img-upload__input');
+const imgUploadPreviewElement = document.querySelector('.img-upload__preview img');
+const EffectPreviews = document.querySelectorAll('.effects__preview');
 
-fileChooser.addEventListener('change', () => {
-  const file = fileChooser.files[0];
+fileChooserElement.addEventListener('change', () => {
+  const file = fileChooserElement.files[0];
 
   const fileName = file.name.toLowerCase();
 
   const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
 
   if (matches) {
-    imgUploadPreview.src = URL.createObjectURL(file);
-    EffectsPreview.forEach((element) => {
-      element.style.backgroundImage = `url(${ imgUploadPreview.src })`;
+    imgUploadPreviewElement.src = URL.createObjectURL(file);
+    EffectPreviews.forEach((element) => {
+      element.style.backgroundImage = `url(${ imgUploadPreviewElement.src })`;
     });
   }
 });

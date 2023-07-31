@@ -5,6 +5,7 @@ import {showAlert, initFilter, getSortedPhotos, debounce} from './util.js';
 import {getData} from './api.js';
 import './loadPhoto.js';
 
+setUserFormSubmit(closeFormImgUpload);
 
 getData(
   (photos) => {
@@ -13,8 +14,4 @@ getData(
     renderPictures(getSortedPhotos());
   },
   (err) => showAlert(err));
-
-
-setUserFormSubmit(closeFormImgUpload);
-
 
