@@ -1,11 +1,11 @@
 import {renderPictures} from './pictures.js';
 import './form.js';
-import {setUserFormSubmit, closeFormImgUpload} from './form.js';
+import {setUserFormSubmit, onFormImgUploadClose} from './form.js';
 import {showAlert, initFilter, getSortedPhotos, debounce} from './util.js';
 import {getData} from './api.js';
 import './loadPhoto.js';
 
-setUserFormSubmit(closeFormImgUpload);
+setUserFormSubmit(onFormImgUploadClose);
 
 getData(
   (photos) => {

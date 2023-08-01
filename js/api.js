@@ -1,4 +1,4 @@
-import {closeFormImgUpload, showSuccessWindow, showErrorWindow, unblockSubmitButton} from './form.js';
+import {onFormImgUploadClose, showSuccessWindow, showErrorWindow, unblockSubmitButton} from './form.js';
 
 const URL_SEND = 'https://29.javascript.pages.academy/kekstagram';
 const URL_GET = 'https://29.javascript.pages.academy/kekstagram/data';
@@ -20,7 +20,7 @@ const sendData = (formData) => {
     },
   ).then((response) => {
     if (response.ok) {
-      closeFormImgUpload();
+      onFormImgUploadClose();
       showSuccessWindow();
     } else {
       showErrorWindow();

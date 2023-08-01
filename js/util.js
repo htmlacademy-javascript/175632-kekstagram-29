@@ -1,12 +1,12 @@
 /* eslint-disable no-useless-return */
 const ALERT_SHOW_TIME = 10000;
+const PHOTOS_COUNT = 10;
+
 const filter = {
   default: 'filter-default',
   random: 'filter-random',
   discussed: 'filter-discussed'
 };
-
-const PHOTOS_COUNT = 10;
 
 const imgFiltersElement = document.querySelector('.img-filters');
 let photosCopy = [];
